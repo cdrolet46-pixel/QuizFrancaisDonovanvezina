@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donovan — Quiz Français Sec 1</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #f093fb;
+            --accent: #f5576c;
+            --success: #48bb78;
+            --danger: #f56565;
+            --warning: #ed8936;
+            --surface: #ffffff;
+            --bg: #f0f4ff;
+            --text: #2d3748;
+            --text-soft: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 8px 24px rgba(0,0,0,0.10);
+            --radius: 15px;
+            --transition: all 0.22s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--surface);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 22px 30px 18px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header h1 { font-size: 1.7em; }
+
+        .header-subtitle {
+            font-size: 0.85em;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: rgba(255,255,255,0.22);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .xp-bar-wrap {
+            background: rgba(255,255,255,0.28);
+            border-radius: 10px;
+            height: 9px;
+            overflow: hidden;
+        }
+
+        .xp-bar {
+            background: white;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.9s cubic-bezier(.4,0,.2,1);
+        }
+
+        .xp-label {
+            font-size: 0.75em;
+            opacity: 0.82;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        /* ── NAV TABS ── */
+        .nav-tabs {
+            display: flex;
+            background: var(--bg);
+            border-bottom: 2px solid var(--border);
+            padding: 0 20px;
+        }
+
+        .nav-tab {
+            padding: 13px 18px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.92em;
+            color: var(--text-soft);
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .nav-tab:hover { color: var(--primary); }
+        .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+
+        /* ── SCREENS ── */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* ── MENU ── */
+        .menu-intro {
+            text-align: center;
+            color: var(--text-soft);
+            padding: 22px 30px 10px;
+            font-size: 1em;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 16px;
+            padding: 16px 30px 30px;
+        }
+
+        .topic-card {
+            position: relative;
+            padding: 22px 18px 18px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: transform 0.22s, box-shadow 0.22s;
+            border: 3px solid transparent;
+            overflow: hidden;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            z-index: 0;
+        }
+
+        .topic-card > * { position: relative; z-index: 1; }
+
+        .topic-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+            border-color: var(--primary);
+        }
+
+        .topic-icon { font-size: 1.9em; margin-bottom: 8px; }
+        .topic-card h3 { color: var(--text); font-size: 1.05em; margin-bottom: 4px; }
+        .topic-card p { color: var(--text-soft); font-size: 0.82em; }
+
+        .topic-stars {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.85em;
+            z-index: 1;
+        }
+
+        .topic-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-size: 0.7em;
+            color: var(--text-soft);
+            z-index: 1;
+        }
+
+        /* ── QUIZ ── */
+        #quizScreen { padding: 28px; }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quiz-topic-name { font-size: 1.15em; font-weight: 700; color: var(--primary); }
+        .quiz-progress-text { color: var(--text-soft); font-size: 0.88em; }
+
+        .progress-bar-wrap {
+            background: var(--border);
+            border-radius: 10px;
+            height: 7px;
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.45s ease;
+        }
+
+        /* Lesson box */
+        .lesson-box {
+            background: #e6f7ff;
+            border-radius: var(--radius);
+            border-left: 5px solid #1890ff;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .lesson-header {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .lesson-header h3 { color: #0050b3; font-size: 1.05em; }
+
+        .lesson-toggle-btn {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .lesson-body {
+            padding: 0 20px 16px;
+            display: none;
+        }
+
+        .lesson-body.open { display: block; }
+
+        .lesson-body p { color: var(--text); font-size: 0.93em; margin-bottom: 10px; line-height: 1.7; }
+        .lesson-body ul { margin-left: 18px; }
+        .lesson-body li { margin-bottom: 10px; font-size: 0.92em; line-height: 1.7; color: var(--text); }
+        .lesson-body strong { color: #003a8c; }
+
+        .example {
+            background: #dbeafe;
+            padding: 5px 12px;
+            border-radius: 6px;
+            margin: 4px 0;
+            font-style: italic;
+            font-size: 0.88em;
+            color: #1e3a8a;
+            display: inline-block;
+        }
+
+        /* Question card */
+        .question-card {
+            background: var(--bg);
+            padding: 26px;
+            border-radius: var(--radius);
+            margin-bottom: 18px;
+        }
+
+        .question-number {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.88em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            color: var(--text);
+            margin-bottom: 22px;
+            line-height: 1.65;
+        }
+
+        /* MCQ */
+        .options { display: grid; gap: 11px; }
+
+        .option {
+            background: white;
+            padding: 15px 18px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.02em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option:hover:not(.locked) { border-color: var(--primary); background: #f0f4ff; }
+
+        .option .opt-letter {
+            background: var(--border);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.82em;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .option.correct { background: #f0fff4; border-color: var(--success); }
+        .option.correct .opt-letter { background: var(--success); color: white; }
+        .option.incorrect { background: #fff5f5; border-color: var(--danger); }
+        .option.incorrect .opt-letter { background: var(--danger); color: white; }
+
+        /* Fill-in-blank */
+        .fill-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .fill-input {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 1.05em;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .fill-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102,126,234,0.14); }
+        .fill-input.correct { border-color: var(--success); background: #f0fff4; }
+        .fill-input.incorrect { border-color: var(--danger); background: #fff5f5; }
+
+        .fill-submit {
+            padding: 0 22px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .fill-submit:hover { background: var(--primary-dark); }
+        .fill-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .fill-correction {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--text-soft);
+            display: none;
+        }
+
+        .fill-correction.show { display: block; }
+
+        /* Explanation */
+        .explanation {
+            background: #fff8e6;
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin-top: 16px;
+            border-left: 4px solid var(--warning);
+            display: none;
+        }
+
+        .explanation.show { display: block; animation: slideDown 0.28s ease; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-7px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .explanation h4 { color: #b7650b; margin-bottom: 7px; font-size: 1em; }
+        .explanation p { color: #78350f; line-height: 1.6; font-size: 0.97em; }
+
+        /* Quiz buttons */
+        .quiz-btns {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 26px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.97em;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        .btn:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--border); color: var(--text-soft); }
+        .btn-success { background: var(--success); color: white; }
+        .btn.hidden { display: none !important; }
+
+        /* ── RESULTS ── */
+        #resultsScreen { padding: 38px; text-align: center; }
+
+        .results-emoji { font-size: 3.8em; margin-bottom: 6px; }
+
+        .results-score {
+            font-size: 3.2em;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+
+        .results-msg { font-size: 1.15em; color: var(--text-soft); margin-bottom: 18px; }
+
+        .xp-gain-pill {
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-size: 1.2em;
+            font-weight: 700;
+            display: inline-block;
+            margin: 12px 0;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.55); opacity: 0; }
+            70% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .badge-notif {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 12px;
+            margin: 7px auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 0.98em;
+            animation: popIn 0.5s ease;
+        }
+
+        .results-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        /* ── REVIEW ── */
+        #reviewScreen { padding: 28px; }
+        #reviewScreen h2 { margin-bottom: 18px; color: var(--text); }
+
+        .review-item {
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            border-left: 4px solid var(--danger);
+        }
+
+        .review-item.was-correct { border-left-color: var(--success); }
+        .review-q { font-weight: 600; margin-bottom: 8px; color: var(--text); font-size: 0.97em; }
+        .review-given { color: var(--danger); font-size: 0.88em; margin-bottom: 4px; }
+        .review-correct { color: var(--success); font-size: 0.88em; margin-bottom: 6px; }
+        .review-expl { color: var(--text-soft); font-size: 0.85em; line-height: 1.55; }
+
+        /* ── BADGES ── */
+        #badgesScreen { padding: 28px; }
+        #badgesScreen h2 { margin-bottom: 6px; color: var(--text); }
+        #badgesScreen .sub { color: var(--text-soft); margin-bottom: 20px; font-size: 0.9em; }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 14px;
+        }
+
+        .badge-card {
+            text-align: center;
+            padding: 18px 12px;
+            border-radius: var(--radius);
+            background: var(--bg);
+            border: 2px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .badge-card.earned {
+            background: linear-gradient(135deg, #fff8e6, #fff0f5);
+            border-color: var(--warning);
+            box-shadow: 0 4px 12px rgba(237,137,54,0.18);
+        }
+
+        .badge-card.locked { filter: grayscale(1) opacity(0.38); }
+        .badge-icon { font-size: 2.3em; margin-bottom: 7px; }
+        .badge-name { font-weight: 700; font-size: 0.85em; color: var(--text); margin-bottom: 4px; }
+        .badge-desc { font-size: 0.72em; color: var(--text-soft); line-height: 1.4; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.48);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+
+        .modal {
+            background: white;
+            border-radius: 22px;
+            padding: 36px 32px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            animation: popIn 0.38s ease;
+        }
+
+        .modal .m-emoji { font-size: 3em; margin-bottom: 10px; }
+        .modal h2 { font-size: 1.6em; margin-bottom: 8px; color: var(--text); }
+        .modal p { color: var(--text-soft); margin-bottom: 20px; line-height: 1.5; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            .header { padding: 18px 18px 14px; }
+            .header h1 { font-size: 1.3em; }
+            .header-stats { gap: 7px; }
+            .stat-pill { font-size: 0.8em; padding: 5px 10px; }
+            .topics-grid { grid-template-columns: 1fr 1fr; gap: 11px; padding: 12px 16px 20px; }
+            .topic-card { padding: 16px 12px 14px; }
+            .topic-icon { font-size: 1.5em; }
+            #quizScreen { padding: 16px; }
+            .question-text { font-size: 1.08em; }
+            .fill-wrap { flex-direction: column; }
+            .fill-submit { padding: 13px; }
+            .quiz-btns { gap: 8px; }
+            #resultsScreen { padding: 24px 20px; }
+            .results-score { font-size: 2.5em; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <h1>🎓 Quiz Français</h1>
+                <div class="header-subtitle" id="levelName">Débutant · Sec 1</div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-pill">🔥 <span id="streakCount">0</span> jour(s)</div>
+                <div class="stat-pill">⚡ <span id="xpTotal">0</span> XP · Niv.<span id="levelNum">1</span></div>
+            </div>
+        </div>
+        <div class="xp-bar-wrap">
+            <div class="xp-bar" id="xpBar" style="width:0%"></div>
+        </div>
+        <div class="xp-label" id="xpLabel">0 / 50 XP pour niveau 2</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="nav-tabs">
+        <div class="nav-tab active" id="tab-menu" onclick="switchTab('menu')">📚 Sujets</div>
+        <div class="nav-tab" id="tab-badges" onclick="switchTab('badges')">🏅 Badges</div>
+    </div>
+
+    <!-- MENU -->
+    <div class="screen active" id="menuScreen">
+        <div class="menu-intro">Choisis un sujet pour pratiquer !</div>
+        <div class="topics-grid" id="topicsGrid"></div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="screen" id="quizScreen">
+        <div class="quiz-header">
+            <div class="quiz-topic-name" id="quizTopicName"></div>
+            <div class="quiz-progress-text" id="quizProgress"></div>
+        </div>
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" id="quizProgressBar" style="width:0%"></div>
+        </div>
+        <div id="lessonContainer"></div>
+        <div id="questionArea" style="margin-top:18px"></div>
+        <div class="quiz-btns">
+            <button class="btn btn-secondary" onclick="backToMenu()">← Retour</button>
+            <div style="display:flex;gap:10px">
+                <button class="btn btn-primary hidden" id="nextBtn" onclick="nextQuestion()">Question suivante →</button>
+                <button class="btn btn-success hidden" id="finishBtn" onclick="showResults()">Résultats 🎉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="screen" id="resultsScreen">
+        <div class="results-emoji" id="resEmoji"></div>
+        <h2 style="color:var(--text);font-size:1.7em;margin-bottom:6px">Résultats</h2>
+        <div class="results-score" id="resScore"></div>
+        <div class="results-msg" id="resMsg"></div>
+        <div id="xpGainDiv"></div>
+        <div id="newBadgesDiv" style="margin:10px 0"></div>
+        <div class="results-btns">
+            <button class="btn btn-secondary" onclick="reviewWrong()">Revoir mes erreurs</button>
+            <button class="btn btn-primary" id="retryBtn" onclick="retryQuiz()">Recommencer</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">← Menu</button>
+        </div>
+    </div>
+
+    <!-- REVIEW -->
+    <div class="screen" id="reviewScreen">
+        <h2>📋 Révision de tes erreurs</h2>
+        <div id="reviewList"></div>
+        <div style="margin-top:20px">
+            <button class="btn btn-primary" onclick="backToResults()">← Retour aux résultats</button>
+        </div>
+    </div>
+
+    <!-- BADGES -->
+    <div class="screen" id="badgesScreen">
+        <h2>🏅 Mes Badges</h2>
+        <p class="sub">Complète des défis pour les débloquer !</p>
+        <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
+</div>
+
+<!-- LEVEL UP MODAL -->
+<div class="modal-overlay" id="levelModal">
+    <div class="modal">
+        <div class="m-emoji">🎉</div>
+        <h2>Niveau supérieur !</h2>
+        <p id="levelModalMsg"></p>
+        <button class="btn btn-primary" onclick="closeModal('levelModal')">Trop cool !</button>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONSTANTES
+// ═══════════════════════════════════════════════════════
+
+const LEVELS = [
+    { name: "Débutant",      min: 0    },
+    { name: "Apprenti",      min: 50   },
+    { name: "Intermédiaire", min: 150  },
+    { name: "Avancé",        min: 300  },
+    { name: "Expert",        min: 500  },
+    { name: "Virtuose",      min: 800  },
+    { name: "Maître",        min: 1200 },
+    { name: "Légende",       min: 2000 },
+];
+
+const BADGES_DEF = [
+    { id: "first_quiz",  icon: "🎯", name: "Premier pas",      desc: "Complète ton premier quiz" },
+    { id: "perfect",     icon: "💯", name: "Parfait !",         desc: "Obtiens 100% sur un quiz" },
+    { id: "streak_3",    icon: "🔥", name: "Persévérant",       desc: "Pratique 3 jours de suite" },
+    { id: "streak_7",    icon: "🏆", name: "Semaine parfaite",  desc: "Pratique 7 jours de suite" },
+    { id: "all_topics",  icon: "🗺️", name: "Explorateur",      desc: "Complète tous les sujets" },
+    { id: "xp_500",      icon: "⚡", name: "Accumulateur",      desc: "Atteins 500 XP" },
+    { id: "xp_1000",     icon: "📚", name: "Pro du français",   desc: "Atteins 1000 XP" },
+    { id: "perfect_5",   icon: "🌟", name: "Imbattable",        desc: "5 quiz parfaits" },
+    { id: "fill_master", icon: "✍️", name: "Scripteur",         desc: "10 questions à trou correctes" },
+];
+
+const LS = {
+    XP:           'daf_xp',
+    STREAK:       'daf_streak',
+    LAST_DATE:    'daf_last_date',
+    TOPIC_BEST:   'daf_topic_best',
+    BADGES:       'daf_badges',
+    PERFECT_CNT:  'daf_perfect_cnt',
+    FILL_CNT:     'daf_fill_cnt',
+};
+
+// ═══════════════════════════════════════════════════════
+//  DONNÉES DES QUIZ
+// ═══════════════════════════════════════════════════════
+
+const quizData = {
+
+    // ── Préfixes ──────────────────────────────────────
+    prefix: {
+        title: "Préfixes",
+        icon: "📝",
+        description: "Les petits mots au début",
+        colors: ["#a8edea", "#fed6e3"],
+        lesson: {
+            title: "Les Préfixes — C'est quoi ?",
+            body: `
+                <p>Un <strong>préfixe</strong> est un groupe de lettres ajouté <strong>au début</strong> d'un mot pour modifier son sens.</p>
+                <ul>
+                    <li><strong>RE-</strong> = encore une fois
+                        <br><span class="example">faire → REfaire (faire encore)</span>
+                    </li>
+                    <li><strong>DÉ-</strong> = contraire ou enlever
+                        <br><span class="example">faire → DÉfaire (enlever ce qui est fait)</span>
+                    </li>
+                    <li><strong>IN- / IM-</strong> = pas, contraire
+                        <br><span class="example">possible → IMpossible (pas possible)</span>
+                    </li>
+                    <li><strong>PRÉ-</strong> = avant
+                        <br><span class="example">voir → PRÉvoir (voir d'avance)</span>
+                    </li>
+                    <li><strong>SUPER-</strong> = au-dessus, en plus
+                        <br><span class="example">marché → SUPERmarché</span>
+                    </li>
+                </ul>
+            `
+        },
+        questions: [
+            {
+                type: "mcq",
+                q: "Quel préfixe signifie <em>encore une fois</em> ?",
+                options: ["re-", "dé-", "pré-", "in-"],
+                correct: 0,
+                explanation: "<strong>RE-</strong> signifie 'encore une fois'. REcommencer = commencer encore une fois !"
+            },
+            {
+                type: "mcq",
+                q: "Dans le mot <em>impossible</em>, quel est le préfixe ?",
+                options: ["poss-", "im-", "-ible", "pos-"],
+                correct: 1,
+                explanation: "<strong>IM-</strong> est le préfixe qui veut dire 'pas'. Impossible = pas possible !"
+            },
+            {
+                type: "mcq",
+                q: "Que veut dire <em>défaire</em> ?",
+                options: ["Faire encore", "Enlever ce qui est fait", "Faire avant", "Faire mal"],
+                correct: 1,
+                explanation: "<strong>DÉ-</strong> signifie enlever ou faire le contraire. Défaire = enlever ce qui est fait !"
+            },
+            {
+                type: "mcq",
+                q: "Quel mot contient un préfixe qui signifie <em>avant</em> ?",
+                options: ["refaire", "prévoir", "défaire", "impossible"],
+                correct: 1,
+                explanation: "<strong>PRÉ-</strong> signifie 'avant'. Prévoir = voir avant que ça arrive !"
+            },
+            {
+                type: "fill",
+                q: "Ajoute le bon préfixe à 'placer' pour dire 'placer encore' : ___placer",
+                correct: "re",
+                alts: ["RE", "Re"],
+                explanation: "On ajoute <strong>RE-</strong> pour dire 'encore une fois' : REplacer !"
+            },
+            {
+                type: "mcq",
+                q: "Quel préfixe transforme 'honnête' en son contraire ?",
+                options: ["pré-", "re-", "dés-", "super-"],
+                correct: 2,
+                explanation: "<strong>DÉS-</strong> (variante de dé-) donne DÉShonnête = pas honnête !"
+            }
+        ]
+    },
+
+    // ── Suffixes ──────────────────────────────────────
+    suffix: {
+        title: "Suffixes",
+        icon: "📌",
+        description: "Les petits mots à la fin",
+        colors: ["#ffecd2", "#fcb69f"],
+        lesson: {
+            title: "Les Suffixes — C'est quoi ?",
+            body: `
+                <p>Un <strong>suffixe</strong> est un groupe de lettres ajouté <strong>à la fin</strong> d'un mot pour changer son sens ou sa classe grammaticale.</p>
+                <ul>
+                    <li><strong>-EUR / -EUSE</strong> = celui/celle qui fait
+                        <br><span class="example">chanter → chantEUR (celui qui chante)</span>
+                    </li>
+                    <li><strong>-TION / -SION</strong> = l'action de
+                        <br><span class="example">créer → créaTION</span>
+                    </li>
+                    <li><strong>-ABLE / -IBLE</strong> = qui peut être
+                        <br><span class="example">manger → mangeABLE (qu'on peut manger)</span>
+                    </li>
+                    <li><strong>-MENT</strong> = de cette manière (adverbe)
+                        <br><span class="example">lent → lenteMENT</span>
+                    </li>
+                    <li><strong>-ETTE</strong> = diminutif
+                        <br><span class="example">maison → maisonETTE (petite maison)</span>
+                    </li>
+                </ul>
+            `
+        },
+        questions: [
+            {
+                type: "mcq",
+                q: "Dans <em>chanteur</em>, quel est le suffixe ?",
+                options: ["-eur", "chant-", "-ant", "-teur"],
+                correct: 0,
+                explanation: "<strong>-EUR</strong> indique 'celui qui fait'. Chanteur = celui qui chante !"
+            },
+            {
+                type: "mcq",
+                q: "Quel suffixe transforme l'adjectif <em>lent</em> en adverbe ?",
+                options: ["-able", "-tion", "-ment", "-eur"],
+                correct: 2,
+                explanation: "<strong>-MENT</strong> crée un adverbe : lenteMENT (de manière lente) !"
+            },
+            {
+                type: "mcq",
+                q: "Que signifie <em>mangeable</em> ?",
+                options: ["Celui qui mange", "L'action de manger", "Qui peut être mangé", "Manger beaucoup"],
+                correct: 2,
+                explanation: "<strong>-ABLE</strong> signifie 'qui peut être'. Mangeable = qui peut être mangé !"
+            },
+            {
+                type: "mcq",
+                q: "Quel mot désigne 'celle qui danse' ?",
+                options: ["dansable", "dansement", "danseuse", "danstion"],
+                correct: 2,
+                explanation: "On ajoute <strong>-EUSE</strong> (féminin de -eur) : danseuse = celle qui danse !"
+            },
+            {
+                type: "fill",
+                q: "Ajoute le suffixe qui transforme <em>rapidement</em> (de manière rapide). Rapide → rapide___",
+                correct: "ment",
+                alts: ["MENT", "Ment"],
+                explanation: "<strong>-MENT</strong> transforme l'adjectif en adverbe : rapideMENT !"
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>création</em>, quel est le suffixe ?",
+                options: ["-tion", "créa-", "-ion", "-ation"],
+                correct: 0,
+                explanation: "<strong>-TION</strong> indique une action. Création = l'action de créer !"
+            }
+        ]
+    },
+
+    // ── Homophones ────────────────────────────────────
+    homophone: {
+        title: "Homophones",
+        icon: "🎵",
+        description: "Des mots qui sonnent pareil",
+        colors: ["#d4fc79", "#96e6a1"],
+        lesson: {
+            title: "Les Homophones — C'est quoi ?",
+            body: `
+                <p>Les <strong>homophones</strong> se prononcent pareil mais s'écrivent différemment et ont des sens différents.</p>
+                <ul>
+                    <li><strong>a / à</strong>
+                        <br><span class="example">a = verbe avoir → Il <u>a</u> faim</span>
+                        <span class="example">à = préposition → Je vais <u>à</u> l'école</span>
+                        <em style="font-size:0.85em">Truc : remplace par "avait" → si ça marche, c'est <strong>a</strong></em>
+                    </li>
+                    <li><strong>ou / où</strong>
+                        <br><span class="example">ou = choix → Pomme <u>ou</u> orange ?</span>
+                        <span class="example">où = lieu/temps → <u>Où</u> vas-tu ?</span>
+                    </li>
+                    <li><strong>son / sont</strong>
+                        <br><span class="example">son = possessif → <u>Son</u> sac</span>
+                        <span class="example">sont = verbe être → Ils <u>sont</u> là</span>
+                        <em style="font-size:0.85em">Truc : remplace par "étaient" → si ça marche, c'est <strong>sont</strong></em>
+                    </li>
+                    <li><strong>mes / mais</strong>
+                        <br><span class="example">mes = possessif pluriel → <u>Mes</u> livres</span>
+                        <span class="example">mais = opposition → J'aime lire <u>mais</u> pas écrire</span>
+                    </li>
+                    <li><strong>on / ont</strong>
+                        <br><span class="example">on = pronom → <u>On</u> joue dehors</span>
+                        <span class="example">ont = verbe avoir → Ils <u>ont</u> gagné</span>
+                    </li>
+                </ul>
+            `
+        },
+        questions: [
+            {
+                type: "fill",
+                q: "Il ___ un chien noir. (a ou à ?)",
+                correct: "a",
+                alts: [],
+                explanation: "C'est <strong>a</strong> (verbe avoir). Truc : «Il avait un chien» ✓ → c'est 'a'."
+            },
+            {
+                type: "mcq",
+                q: "___-tu habites ? (Quel mot ?)",
+                options: ["ou", "où", "hou", "aou"],
+                correct: 1,
+                explanation: "C'est <strong>où</strong> avec accent car on pose une question de lieu."
+            },
+            {
+                type: "fill",
+                q: "Mes amis ___ gentils. (son ou sont ?)",
+                correct: "sont",
+                alts: ["SONT", "Sont"],
+                explanation: "C'est <strong>sont</strong> (verbe être). Truc : «Mes amis étaient gentils» ✓ → c'est 'sont'."
+            },
+            {
+                type: "mcq",
+                q: "J'aime le soccer ___ pas le hockey.",
+                options: ["mes", "mais", "met", "mai"],
+                correct: 1,
+                explanation: "<strong>Mais</strong> exprime une opposition (= par contre, cependant)."
+            },
+            {
+                type: "fill",
+                q: "___ amis viennent ce soir. (mes ou mais ?)",
+                correct: "mes",
+                alts: ["Mes", "MES"],
+                explanation: "C'est <strong>mes</strong> (déterminant possessif). Truc : remplace par 'mon' au singulier → 'mon ami' ✓."
+            },
+            {
+                type: "mcq",
+                q: "Les élèves ___ terminé leurs devoirs.",
+                options: ["on", "ont", "an", "en"],
+                correct: 1,
+                explanation: "<strong>Ont</strong> est le verbe avoir. Truc : «ils avaient terminé» ✓ → c'est 'ont'."
+            }
+        ]
+    },
+
+    // ── Les Modes ─────────────────────────────────────
+    modes: {
+        title: "Les Modes",
+        icon: "⚙️",
+        description: "Indicatif, subjonctif...",
+        colors: ["#a18cd1", "#fbc2eb"],
+        lesson: {
+            title: "Les Modes des verbes",
+            body: `
+                <p>Le <strong>mode</strong> indique de quelle façon on présente l'action.</p>
+                <ul>
+                    <li><strong>INDICATIF</strong> = faits réels, certains
+                        <br><span class="example">Je mange une pomme. (c'est vrai !)</span>
+                    </li>
+                    <li><strong>SUBJONCTIF</strong> = souhait, doute, obligation
+                        <br><span class="example">Il faut que tu <u>manges</u>. (pas sûr que tu le feras)</span>
+                        <em style="font-size:0.85em">Truc : souvent après « il faut que », « bien que », « pour que »</em>
+                    </li>
+                    <li><strong>IMPÉRATIF</strong> = ordre, conseil
+                        <br><span class="example"><u>Mange</u> ta pomme ! (ordre direct)</span>
+                    </li>
+                    <li><strong>INFINITIF</strong> = forme de base du verbe
+                        <br><span class="example"><u>Manger</u> est important. (finit par -er, -ir, -re, -oir)</span>
+                    </li>
+                    <li><strong>PARTICIPE</strong> = verbe utilisé comme adjectif
+                        <br><span class="example">Une pomme <u>mangée</u>. (participe passé)</span>
+                    </li>
+                </ul>
+            `
+        },
+        questions: [
+            {
+                type: "mcq",
+                q: "Dans <em>Je parle français</em>, quel est le mode ?",
+                options: ["Indicatif", "Subjonctif", "Impératif", "Infinitif"],
+                correct: 0,
+                explanation: "<strong>Indicatif</strong> car c'est un fait réel. L'indicatif présente la réalité !"
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>Fais tes devoirs !</em>, quel est le mode ?",
+                options: ["Indicatif", "Subjonctif", "Impératif", "Infinitif"],
+                correct: 2,
+                explanation: "<strong>Impératif</strong> car c'est un ordre ou une injonction !"
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>Il faut que tu viennes</em>, quel est le mode de <em>viennes</em> ?",
+                options: ["Indicatif", "Subjonctif", "Impératif", "Infinitif"],
+                correct: 1,
+                explanation: "<strong>Subjonctif</strong> ! Truc : après 'il faut que', c'est toujours le subjonctif !"
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>J'aime danser</em>, quel est le mode de <em>danser</em> ?",
+                options: ["Indicatif", "Subjonctif", "Impératif", "Infinitif"],
+                correct: 3,
+                explanation: "<strong>Infinitif</strong> = le verbe de base, non conjugué. Il finit par -er !"
+            },
+            {
+                type: "mcq",
+                q: "Quel mode utilise-t-on après <em>bien que</em> ?",
+                options: ["Indicatif", "Subjonctif", "Impératif", "Infinitif"],
+                correct: 1,
+                explanation: "Le <strong>subjonctif</strong> s'utilise avec 'bien que', 'il faut que', 'pour que', etc."
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>Prenons le bus !</em>, quel est le mode ?",
+                options: ["Indicatif", "Subjonctif", "Impératif", "Infinitif"],
+                correct: 2,
+                explanation: "<strong>Impératif</strong> — ici 1ère personne du pluriel : c'est une suggestion/invitation !"
+            }
+        ]
+    },
+
+    // ── Passé Simple ──────────────────────────────────
+    passe: {
+        title: "Passé Simple",
+        icon: "⏰",
+        description: "Le temps du récit",
+        colors: ["#ffecd2", "#fcb69f"],
+        lesson: {
+            title: "Le Passé Simple",
+            body: `
+                <p>Le <strong>passé simple</strong> est le temps du récit écrit, utilisé dans les romans et contes. Il est rare à l'oral.</p>
+                <ul>
+                    <li><strong>Verbes en -ER :</strong>
+                        <br><span class="example">parler → je parlAI, tu parlAS, il parlA, nous parlÂMES, vous parlÂTES, ils parlÈRENT</span>
+                    </li>
+                    <li><strong>Verbes en -IR :</strong>
+                        <br><span class="example">finir → je finIS, tu finIS, il finIT, nous finÎMES, vous finÎTES, ils finIRENT</span>
+                    </li>
+                    <li><strong>Être :</strong>
+                        <br><span class="example">je FUS, tu FUS, il FUT, nous FÛMES, vous FÛTES, ils FURENT</span>
+                    </li>
+                    <li><strong>Avoir :</strong>
+                        <br><span class="example">j'EUS, tu EUS, il EUT, nous EÛMES, vous EÛTES, ils EURENT</span>
+                    </li>
+                </ul>
+                <p><strong>Truc :</strong> Le passé simple sonne "ancien" ou "littéraire" !</p>
+            `
+        },
+        questions: [
+            {
+                type: "mcq",
+                q: "Conjugue <em>parler</em> au passé simple — il : Il ___",
+                options: ["parlait", "parla", "a parlé", "parle"],
+                correct: 1,
+                explanation: "<strong>parla</strong> ! Verbes en -ER → il → terminaison -A au passé simple."
+            },
+            {
+                type: "mcq",
+                q: "Conjugue <em>finir</em> au passé simple — elle : Elle ___",
+                options: ["finissait", "fina", "finit", "a fini"],
+                correct: 2,
+                explanation: "<strong>finit</strong> ! Verbes en -IR → il/elle → terminaison -IT au passé simple."
+            },
+            {
+                type: "mcq",
+                q: "Quelle est la forme correcte d'<em>être</em> au passé simple — il ?",
+                options: ["était", "fut", "est", "a été"],
+                correct: 1,
+                explanation: "<strong>fut</strong> est le passé simple d'être. Très fréquent dans les récits !"
+            },
+            {
+                type: "fill",
+                q: "Passé simple de <em>avoir</em> — elle : Elle ___ peur.",
+                correct: "eut",
+                alts: ["EUT", "Eut"],
+                explanation: "<strong>eut</strong> est le passé simple d'avoir à la 3e personne du singulier."
+            },
+            {
+                type: "mcq",
+                q: "Dans quel type de texte utilise-t-on surtout le passé simple ?",
+                options: ["Conversations", "Histoires écrites", "Textos", "Dialogues modernes"],
+                correct: 1,
+                explanation: "Le <strong>passé simple</strong> s'utilise dans les récits écrits et la littérature !"
+            },
+            {
+                type: "mcq",
+                q: "Quelle phrase est au passé simple ?",
+                options: ["Il mangeait une pomme", "Il mange une pomme", "Il mangea une pomme", "Il a mangé une pomme"],
+                correct: 2,
+                explanation: "<strong>mangea</strong> est au passé simple. Les autres : imparfait, présent, passé composé."
+            }
+        ]
+    },
+
+    // ── Conjugaison présent ───────────────────────────
+    conjugaison: {
+        title: "Conjugaison",
+        icon: "🔤",
+        description: "Le présent de l'indicatif",
+        colors: ["#89f7fe", "#66a6ff"],
+        lesson: {
+            title: "Le Présent de l'Indicatif",
+            body: `
+                <p>Le <strong>présent</strong> décrit ce qui se passe maintenant ou une vérité générale.</p>
+                <ul>
+                    <li><strong>Verbes réguliers en -ER</strong> (parler, aimer…)
+                        <br><span class="example">je parlE, tu parlES, il/elle parlE, nous parlONS, vous parlEZ, ils parlENT</span>
+                    </li>
+                    <li><strong>Verbes réguliers en -IR</strong> (finir, choisir…)
+                        <br><span class="example">je finIS, tu finIS, il finIT, nous finISSons, vous finISSez, ils finISSent</span>
+                    </li>
+                    <li><strong>Être</strong>
+                        <br><span class="example">je suis, tu es, il est, nous sommes, vous êtes, ils sont</span>
+                    </li>
+                    <li><strong>Avoir</strong>
+                        <br><span class="example">j'ai, tu as, il a, nous avons, vous avez, ils ont</span>
+                    </li>
+                    <li><strong>Aller</strong>
+                        <br><span class="example">je vais, tu vas, il va, nous allons, vous allez, ils vont</span>
+                    </li>
+                </ul>
+            `
+        },
+        questions: [
+            {
+                type: "fill",
+                q: "Conjugue <em>parler</em> au présent (nous) : Nous ___",
+                correct: "parlons",
+                alts: ["PARLONS", "Parlons"],
+                explanation: "<strong>parlons</strong> — verbe en -ER, nous → enlève -er, ajoute -ons."
+            },
+            {
+                type: "mcq",
+                q: "Conjugue <em>finir</em> au présent (ils) : Ils ___",
+                options: ["finissent", "finient", "finit", "finissons"],
+                correct: 0,
+                explanation: "<strong>finissent</strong> — verbe en -IR (type finir), ils → -issent !"
+            },
+            {
+                type: "fill",
+                q: "Conjugue <em>être</em> au présent (vous) : Vous ___",
+                correct: "êtes",
+                alts: ["ETES", "êtes", "Êtes"],
+                explanation: "<strong>êtes</strong> — être est irrégulier, vous → êtes (avec l'accent)."
+            },
+            {
+                type: "mcq",
+                q: "Conjugue <em>avoir</em> au présent (nous) : Nous ___",
+                options: ["sommes", "avons", "avez", "aves"],
+                correct: 1,
+                explanation: "<strong>avons</strong> — avoir, nous → avons !"
+            },
+            {
+                type: "fill",
+                q: "Conjugue <em>aller</em> au présent (tu) : Tu ___",
+                correct: "vas",
+                alts: ["VAS", "Vas"],
+                explanation: "<strong>vas</strong> — aller est irrégulier, tu → vas !"
+            },
+            {
+                type: "mcq",
+                q: "Conjugue <em>chanter</em> au présent (tu) : Tu ___",
+                options: ["chante", "chantes", "chantons", "chantez"],
+                correct: 1,
+                explanation: "<strong>chantes</strong> — verbe en -ER, tu → -es !"
+            }
+        ]
+    },
+
+    // ── Accord des adjectifs ──────────────────────────
+    accord: {
+        title: "Accord des adjectifs",
+        icon: "✏️",
+        description: "Féminin, masculin, pluriel",
+        colors: ["#fddb92", "#d1fdff"],
+        lesson: {
+            title: "L'Accord des Adjectifs",
+            body: `
+                <p>L'adjectif <strong>s'accorde en genre et en nombre</strong> avec le nom qu'il décrit.</p>
+                <ul>
+                    <li><strong>Féminin</strong> : on ajoute généralement <strong>-e</strong>
+                        <br><span class="example">petit → petitE · grand → grandE · fort → fortE</span>
+                    </li>
+                    <li><strong>Pluriel</strong> : on ajoute généralement <strong>-s</strong>
+                        <br><span class="example">petit → petitS · grande → grandeS</span>
+                    </li>
+                    <li><strong>Exceptions féminines courantes :</strong>
+                        <br><span class="example">beau → belle · vieux → vieille · doux → douce · heureux → heureuse</span>
+                    </li>
+                    <li><strong>Adjectifs invariables :</strong> les adjectifs de couleur composés ne changent pas
+                        <br><span class="example">des yeux bleu clair (pas de -s)</span>
+                    </li>
+                </ul>
+                <p><strong>Truc :</strong> Si on entend la consonne finale au féminin, c'est que l'adjectif prend un -e !</p>
+            `
+        },
+        questions: [
+            {
+                type: "mcq",
+                q: "Accord de <em>petit</em> pour désigner <em>une fille</em> ?",
+                options: ["petit", "petite", "petits", "petites"],
+                correct: 1,
+                explanation: "<strong>petite</strong> — féminin singulier → on ajoute -e !"
+            },
+            {
+                type: "mcq",
+                q: "Accord de <em>grand</em> pour désigner <em>des garçons</em> ?",
+                options: ["grand", "grande", "grands", "grandes"],
+                correct: 2,
+                explanation: "<strong>grands</strong> — masculin pluriel → on ajoute -s !"
+            },
+            {
+                type: "fill",
+                q: "Accorde <em>heureux</em> au féminin singulier : Elle est ___",
+                correct: "heureuse",
+                alts: ["HEUREUSE", "Heureuse"],
+                explanation: "<strong>heureuse</strong> — exception : heureux → heureuse (x → se au féminin) !"
+            },
+            {
+                type: "mcq",
+                q: "Accord de <em>beau</em> pour désigner <em>une belle maison</em> ?",
+                options: ["beau", "beaux", "belle", "belles"],
+                correct: 2,
+                explanation: "<strong>belle</strong> — exception : beau → belle au féminin !"
+            },
+            {
+                type: "mcq",
+                q: "Accord de <em>doux</em> pour <em>une voix</em> (féminin singulier) ?",
+                options: ["doux", "douce", "douces", "doux"],
+                correct: 1,
+                explanation: "<strong>douce</strong> — exception : doux → douce au féminin (x → ce) !"
+            },
+            {
+                type: "fill",
+                q: "Accorde <em>fort</em> pour <em>des femmes fortes</em> : Des femmes ___",
+                correct: "fortes",
+                alts: ["FORTES", "Fortes"],
+                explanation: "<strong>fortes</strong> — féminin pluriel : fort → forte → fortes !"
+            }
+        ]
+    },
+
+    // ── Classes de mots ───────────────────────────────
+    classes: {
+        title: "Classes de mots",
+        icon: "🔍",
+        description: "Nom, verbe, adjectif...",
+        colors: ["#e0c3fc", "#8ec5fc"],
+        lesson: {
+            title: "Les Classes de Mots",
+            body: `
+                <p>Chaque mot appartient à une <strong>classe grammaticale</strong>.</p>
+                <ul>
+                    <li><strong>NOM</strong> : désigne une personne, un animal, une chose, une idée
+                        <br><span class="example">chien, école, bonheur, Marie</span>
+                    </li>
+                    <li><strong>VERBE</strong> : exprime une action ou un état
+                        <br><span class="example">courir, être, penser, manger</span>
+                    </li>
+                    <li><strong>ADJECTIF</strong> : décrit ou qualifie un nom
+                        <br><span class="example">grand, rouge, intelligent, rapide</span>
+                    </li>
+                    <li><strong>ADVERBE</strong> : modifie un verbe, adjectif ou autre adverbe
+                        <br><span class="example">lentement, très, souvent, jamais</span>
+                    </li>
+                    <li><strong>DÉTERMINANT</strong> : accompagne le nom
+                        <br><span class="example">le, la, les, un, une, mon, ta, ces</span>
+                    </li>
+                    <li><strong>PRONOM</strong> : remplace un nom
+                        <br><span class="example">il, elle, nous, le, lui, qui, ce</span>
+                    </li>
+                    <li><strong>PRÉPOSITION</strong> : relie des mots
+                        <br><span class="example">à, de, pour, sur, dans, avec</span>
+                    </li>
+                    <li><strong>CONJONCTION</strong> : unit des propositions
+                        <br><span class="example">et, ou, mais, car, donc, que</span>
+                    </li>
+                </ul>
+            `
+        },
+        questions: [
+            {
+                type: "mcq",
+                q: "Dans <em>Le chien court</em>, quelle est la classe de <em>chien</em> ?",
+                options: ["Verbe", "Nom", "Adjectif", "Adverbe"],
+                correct: 1,
+                explanation: "<strong>Nom</strong> — 'chien' désigne un animal. C'est un nom commun !"
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>Elle mange rapidement</em>, quelle est la classe de <em>rapidement</em> ?",
+                options: ["Adjectif", "Nom", "Adverbe", "Verbe"],
+                correct: 2,
+                explanation: "<strong>Adverbe</strong> — 'rapidement' modifie le verbe 'mange' (de manière rapide)."
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>une belle fleur rouge</em>, combien y a-t-il d'adjectifs ?",
+                options: ["1", "2", "3", "0"],
+                correct: 1,
+                explanation: "Il y a <strong>2 adjectifs</strong> : <em>belle</em> et <em>rouge</em>. 'une' est un déterminant, 'fleur' est un nom."
+            },
+            {
+                type: "mcq",
+                q: "Quelle est la classe de <em>mais</em> dans : <em>J'aime les maths mais pas le français</em> ?",
+                options: ["Adverbe", "Préposition", "Conjonction", "Déterminant"],
+                correct: 2,
+                explanation: "<strong>Conjonction</strong> — 'mais' relie deux propositions. C'est une conjonction de coordination !"
+            },
+            {
+                type: "fill",
+                q: "Quelle est la classe de <em>il</em> dans : Il mange ? (nom / pronom / verbe)",
+                correct: "pronom",
+                alts: ["Pronom", "PRONOM"],
+                explanation: "<strong>Pronom</strong> — 'il' remplace le nom d'une personne. C'est un pronom personnel sujet !"
+            },
+            {
+                type: "mcq",
+                q: "Dans <em>le grand sac noir</em>, quelle est la classe de <em>le</em> ?",
+                options: ["Pronom", "Adjectif", "Déterminant", "Préposition"],
+                correct: 2,
+                explanation: "<strong>Déterminant</strong> (article défini) — 'le' accompagne le nom 'sac' !"
+            }
+        ]
+    }
+};
+
+// ═══════════════════════════════════════════════════════
+//  STATE (persistant via localStorage)
+// ═══════════════════════════════════════════════════════
+
+let state = {
+    xp:          parseInt(localStorage.getItem(LS.XP)         || '0'),
+    streak:      parseInt(localStorage.getItem(LS.STREAK)     || '0'),
+    lastDate:    localStorage.getItem(LS.LAST_DATE)            || '',
+    topicBest:   JSON.parse(localStorage.getItem(LS.TOPIC_BEST)|| '{}'),
+    badges:      JSON.parse(localStorage.getItem(LS.BADGES)   || '[]'),
+    perfectCnt:  parseInt(localStorage.getItem(LS.PERFECT_CNT)|| '0'),
+    fillCnt:     parseInt(localStorage.getItem(LS.FILL_CNT)   || '0'),
+};
+
+// Session
+let session = {
+    topic: null,
+    qIndex: 0,
+    score: 0,
+    answered: null,
+    wrongAnswers: [],
+};
+
+// ═══════════════════════════════════════════════════════
+//  STREAK
+// ═══════════════════════════════════════════════════════
+
+function updateStreak() {
+    const today = new Date().toISOString().slice(0, 10);
+    const last  = state.lastDate;
+
+    if (last === today) return; // déjà joué aujourd'hui
+
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    if (last === yesterday) {
+        state.streak++;
+    } else {
+        state.streak = 1;
+    }
+    state.lastDate = today;
+    saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+//  NIVEAUX
+// ═══════════════════════════════════════════════════════
+
+function getLevel(xp) {
+    let lvl = 0;
+    for (let i = 0; i < LEVELS.length; i++) {
+        if (xp >= LEVELS[i].min) lvl = i;
+    }
+    return lvl;
+}
+
+function getLevelProgress(xp) {
+    const lvl = getLevel(xp);
+    const current = LEVELS[lvl].min;
+    const next = LEVELS[lvl + 1] ? LEVELS[lvl + 1].min : current + 100;
+    const pct = Math.min(100, Math.round(((xp - current) / (next - current)) * 100));
+    return { lvl, name: LEVELS[lvl].name, current, next, pct };
+}
+
+function addXP(amount) {
+    const lvlBefore = getLevel(state.xp);
+    state.xp += amount;
+    const lvlAfter = getLevel(state.xp);
+    saveState();
+    renderHeader();
+    if (lvlAfter > lvlBefore) {
+        document.getElementById('levelModalMsg').textContent =
+            `Tu es maintenant ${LEVELS[lvlAfter].name} ! Continue comme ça, tu es sur la bonne voie ! 💪`;
+        openModal('levelModal');
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+//  BADGES
+// ═══════════════════════════════════════════════════════
+
+function earnBadge(id) {
+    if (state.badges.includes(id)) return false;
+    state.badges.push(id);
+    saveState();
+    return true;
+}
+
+function checkBadges(score, total, topic) {
+    const newBadges = [];
+
+    // Premier quiz
+    if (earnBadge('first_quiz')) newBadges.push('first_quiz');
+
+    // Parfait
+    if (score === total) {
+        state.perfectCnt++;
+        localStorage.setItem(LS.PERFECT_CNT, state.perfectCnt);
+        if (earnBadge('perfect'))   newBadges.push('perfect');
+        if (state.perfectCnt >= 5 && earnBadge('perfect_5')) newBadges.push('perfect_5');
+    }
+
+    // Streaks
+    if (state.streak >= 3 && earnBadge('streak_3')) newBadges.push('streak_3');
+    if (state.streak >= 7 && earnBadge('streak_7')) newBadges.push('streak_7');
+
+    // Tous les sujets
+    const topics = Object.keys(quizData);
+    const allDone = topics.every(t => state.topicBest[t] !== undefined);
+    if (allDone && earnBadge('all_topics')) newBadges.push('all_topics');
+
+    // XP
+    if (state.xp >= 500  && earnBadge('xp_500'))  newBadges.push('xp_500');
+    if (state.xp >= 1000 && earnBadge('xp_1000')) newBadges.push('xp_1000');
+
+    // Maître fill-in
+    if (state.fillCnt >= 10 && earnBadge('fill_master')) newBadges.push('fill_master');
+
+    return newBadges;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PERSISTANCE
+// ═══════════════════════════════════════════════════════
+
+function saveState() {
+    localStorage.setItem(LS.XP,          state.xp);
+    localStorage.setItem(LS.STREAK,      state.streak);
+    localStorage.setItem(LS.LAST_DATE,   state.lastDate);
+    localStorage.setItem(LS.TOPIC_BEST,  JSON.stringify(state.topicBest));
+    localStorage.setItem(LS.BADGES,      JSON.stringify(state.badges));
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDU HEADER
+// ═══════════════════════════════════════════════════════
+
+function renderHeader() {
+    const p = getLevelProgress(state.xp);
+    document.getElementById('xpBar').style.width      = p.pct + '%';
+    document.getElementById('xpTotal').textContent    = state.xp;
+    document.getElementById('levelNum').textContent   = p.lvl + 1;
+    document.getElementById('levelName').textContent  = p.name + ' · Sec 1';
+    document.getElementById('streakCount').textContent = state.streak;
+    const nextName = LEVELS[p.lvl + 1] ? LEVELS[p.lvl + 1].name : 'Légende MAX';
+    document.getElementById('xpLabel').textContent =
+        `${state.xp - p.current} / ${p.next - p.current} XP → ${nextName}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MENU
+// ═══════════════════════════════════════════════════════
+
+function renderMenu() {
+    const grid = document.getElementById('topicsGrid');
+    grid.innerHTML = '';
+    Object.entries(quizData).forEach(([key, data]) => {
+        const best   = state.topicBest[key];
+        const total  = data.questions.length;
+        const stars  = best === undefined ? '☆☆☆'
+                     : best === total ? '⭐⭐⭐'
+                     : best >= total * 0.7 ? '⭐⭐☆'
+                     : '⭐☆☆';
+
+        const [c1, c2] = data.colors;
+        const card = document.createElement('div');
+        card.className = 'topic-card';
+        card.style.setProperty('--c1', c1);
+        card.style.setProperty('--c2', c2);
+        card.style.cssText = `position:relative;padding:22px 18px 18px;border-radius:15px;cursor:pointer;transition:transform .22s,box-shadow .22s;border:3px solid transparent;overflow:hidden;`;
+        card.innerHTML = `
+            <div style="position:absolute;inset:0;background:linear-gradient(135deg,${c1} 0%,${c2} 100%);z-index:0"></div>
+            <div style="position:relative;z-index:1">
+                <div class="topic-icon">${data.icon}</div>
+                <h3>${data.title}</h3>
+                <p>${data.description}</p>
+            </div>
+            <div class="topic-stars">${stars}</div>
+            ${best !== undefined ? `<div class="topic-badge">${best}/${total}</div>` : ''}
+        `;
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-4px)';
+            card.style.boxShadow = '0 12px 32px rgba(0,0,0,0.14)';
+            card.style.borderColor = '#667eea';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+            card.style.borderColor = 'transparent';
+        });
+        card.onclick = () => startQuiz(key);
+        grid.appendChild(card);
+    });
+}
+
+// ═══════════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════════
+
+function startQuiz(topicKey) {
+    session.topic     = topicKey;
+    session.qIndex    = 0;
+    session.score     = 0;
+    session.answered  = null;
+    session.wrongAnswers = [];
+
+    updateStreak();
+
+    showScreen('quizScreen');
+
+    const data = quizData[topicKey];
+    document.getElementById('quizTopicName').textContent = data.icon + ' ' + data.title;
+
+    // Leçon (repliée par défaut sauf la première fois)
+    renderLesson(data.lesson);
+    renderQuestion();
+}
+
+function renderLesson(lesson) {
+    const container = document.getElementById('lessonContainer');
+    container.innerHTML = `
+        <div class="lesson-box">
+            <div class="lesson-header" onclick="toggleLesson()">
+                <h3>📖 ${lesson.title}</h3>
+                <button class="lesson-toggle-btn" id="lessonBtn">Afficher</button>
+            </div>
+            <div class="lesson-body" id="lessonBody">
+                ${lesson.body}
+            </div>
+        </div>
+    `;
+}
+
+function toggleLesson() {
+    const body = document.getElementById('lessonBody');
+    const btn  = document.getElementById('lessonBtn');
+    if (body.classList.contains('open')) {
+        body.classList.remove('open');
+        btn.textContent = 'Afficher';
+    } else {
+        body.classList.add('open');
+        btn.textContent = 'Masquer';
+    }
+}
+
+function renderQuestion() {
+    const data  = quizData[session.topic];
+    const q     = data.questions[session.qIndex];
+    const total = data.questions.length;
+
+    session.answered = null;
+    document.getElementById('nextBtn').classList.add('hidden');
+    document.getElementById('finishBtn').classList.add('hidden');
+
+    // Barre de progression
+    const pct = Math.round((session.qIndex / total) * 100);
+    document.getElementById('quizProgressBar').style.width = pct + '%';
+    document.getElementById('quizProgress').textContent = `${session.qIndex + 1} / ${total}`;
+
+    let optionsHTML = '';
+    if (q.type === 'mcq') {
+        const letters = ['A', 'B', 'C', 'D'];
+        optionsHTML = `<div class="options">` +
+            q.options.map((opt, i) => `
+                <div class="option" id="opt_${i}" onclick="selectMCQ(${i})">
+                    <span class="opt-letter">${letters[i]}</span>
+                    ${opt}
+                </div>
+            `).join('') + `</div>`;
+    } else {
+        optionsHTML = `
+            <div class="fill-wrap">
+                <input class="fill-input" id="fillInput" type="text"
+                    placeholder="Tape ta réponse…"
+                    onkeydown="if(event.key==='Enter')submitFill()"
+                    autocomplete="off" autocorrect="off" spellcheck="false">
+                <button class="fill-submit" id="fillBtn" onclick="submitFill()">Valider</button>
+            </div>
+            <div class="fill-correction" id="fillCorrection"></div>
+        `;
+    }
+
+    document.getElementById('questionArea').innerHTML = `
+        <div class="question-card">
+            <div class="question-number">Question ${session.qIndex + 1}</div>
+            <div class="question-text">${q.q}</div>
+            ${optionsHTML}
+            <div class="explanation" id="explanation">
+                <h4>💡 Explication</h4>
+                <p>${q.explanation}</p>
+            </div>
+        </div>
+    `;
+
+    if (q.type === 'fill') {
+        document.getElementById('fillInput').focus();
+    }
+}
+
+function selectMCQ(index) {
+    if (session.answered !== null) return;
+    session.answered = index;
+
+    const q    = quizData[session.topic].questions[session.qIndex];
+    const opts = document.querySelectorAll('.option');
+    opts.forEach(o => o.classList.add('locked'));
+
+    setTimeout(() => {
+        if (index === q.correct) {
+            opts[index].classList.add('correct');
+            session.score++;
+        } else {
+            opts[index].classList.add('incorrect');
+            opts[q.correct].classList.add('correct');
+            session.wrongAnswers.push({
+                q: q.q,
+                given: q.options[index],
+                correct: q.options[q.correct],
+                explanation: q.explanation,
+                wasCorrect: false,
+            });
+        }
+        showExplanation();
+    }, 200);
+}
+
+function submitFill() {
+    if (session.answered !== null) return;
+
+    const q      = quizData[session.topic].questions[session.qIndex];
+    const input  = document.getElementById('fillInput');
+    const value  = input.value.trim().toLowerCase();
+    const correct = q.correct.toLowerCase();
+    const alts   = (q.alts || []).map(a => a.toLowerCase());
+
+    session.answered = value;
+    document.getElementById('fillBtn').disabled = true;
+    input.readOnly = true;
+
+    const isOK = value === correct || alts.includes(value);
+
+    if (isOK) {
+        input.classList.add('correct');
+        session.score++;
+        state.fillCnt++;
+        localStorage.setItem(LS.FILL_CNT, state.fillCnt);
+    } else {
+        input.classList.add('incorrect');
+        const corr = document.getElementById('fillCorrection');
+        corr.innerHTML = `Réponse correcte : <strong>${q.correct}</strong>`;
+        corr.classList.add('show');
+        session.wrongAnswers.push({
+            q: q.q,
+            given: value || '(rien)',
+            correct: q.correct,
+            explanation: q.explanation,
+            wasCorrect: false,
+        });
+    }
+    showExplanation();
+}
+
+function showExplanation() {
+    document.getElementById('explanation').classList.add('show');
+    const data  = quizData[session.topic];
+    const isLast = session.qIndex >= data.questions.length - 1;
+    if (isLast) {
+        document.getElementById('finishBtn').classList.remove('hidden');
+    } else {
+        document.getElementById('nextBtn').classList.remove('hidden');
+    }
+}
+
+function nextQuestion() {
+    session.qIndex++;
+    renderQuestion();
+}
+
+function retryQuiz() {
+    startQuiz(session.topic);
+}
+
+// ═══════════════════════════════════════════════════════
+//  RÉSULTATS
+// ═══════════════════════════════════════════════════════
+
+function showResults() {
+    const data  = quizData[session.topic];
+    const total = data.questions.length;
+    const score = session.score;
+    const pct   = (score / total) * 100;
+
+    // Mise à jour best score
+    const prev = state.topicBest[session.topic] || 0;
+    if (score > prev) state.topicBest[session.topic] = score;
+
+    // XP gagné
+    const xpEarned = score * 10 + (pct === 100 ? 30 : 0) + 5;
+    addXP(xpEarned);
+
+    // Badges
+    const newBadges = checkBadges(score, total, session.topic);
+
+    // Affichage
+    let emoji, msg;
+    if (pct === 100) { emoji = '🏆'; msg = 'Parfait ! Tu es imbattable !'; }
+    else if (pct >= 80) { emoji = '🌟'; msg = 'Excellent travail ! Presque parfait !'; }
+    else if (pct >= 60) { emoji = '👍'; msg = 'Bon travail ! Continue comme ça !'; }
+    else if (pct >= 40) { emoji = '💪'; msg = 'C\'est un bon début, continue à pratiquer !'; }
+    else { emoji = '📖'; msg = 'Relis la leçon et recommence, tu vas y arriver !'; }
+
+    document.getElementById('resEmoji').textContent    = emoji;
+    document.getElementById('resScore').textContent    = `${score}/${total}`;
+    document.getElementById('resMsg').textContent      = msg;
+
+    document.getElementById('xpGainDiv').innerHTML = `
+        <div class="xp-gain-pill">+${xpEarned} XP gagnés !</div>
+    `;
+
+    const badgeDiv = document.getElementById('newBadgesDiv');
+    badgeDiv.innerHTML = '';
+    newBadges.forEach(id => {
+        const def = BADGES_DEF.find(b => b.id === id);
+        if (!def) return;
+        const notif = document.createElement('div');
+        notif.className = 'badge-notif';
+        notif.innerHTML = `${def.icon} Nouveau badge : <strong>${def.name}</strong>`;
+        badgeDiv.appendChild(notif);
+    });
+
+    showScreen('resultsScreen');
+    document.getElementById('quizProgressBar').style.width = '100%';
+}
+
+// ═══════════════════════════════════════════════════════
+//  RÉVISION DES ERREURS
+// ═══════════════════════════════════════════════════════
+
+function reviewWrong() {
+    const list = document.getElementById('reviewList');
+    if (session.wrongAnswers.length === 0) {
+        list.innerHTML = '<p style="color:var(--success);font-size:1.1em;padding:20px 0">🎉 Aucune erreur ! Parfait !</p>';
+    } else {
+        list.innerHTML = session.wrongAnswers.map(item => `
+            <div class="review-item">
+                <div class="review-q">${item.q.replace(/<[^>]*>/g,'')}</div>
+                <div class="review-given">✗ Ta réponse : ${item.given}</div>
+                <div class="review-correct">✓ Bonne réponse : ${item.correct}</div>
+                <div class="review-expl">${item.explanation.replace(/<[^>]*>/g,'')}</div>
+            </div>
+        `).join('');
+    }
+    showScreen('reviewScreen');
+}
+
+function backToResults() {
+    showScreen('resultsScreen');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function backToMenu() {
+    renderMenu();
+    showScreen('menuScreen');
+    // Réaffiche les onglets
+    document.getElementById('tab-menu').classList.add('active');
+    document.getElementById('tab-badges').classList.remove('active');
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+
+    if (tab === 'menu') {
+        renderMenu();
+        showScreen('menuScreen');
+    } else if (tab === 'badges') {
+        renderBadges();
+        showScreen('badgesScreen');
+    }
+}
+
+// ═══════════════════════════════════════════════════════
+//  BADGES PAGE
+// ═══════════════════════════════════════════════════════
+
+function renderBadges() {
+    const grid = document.getElementById('badgesGrid');
+    grid.innerHTML = BADGES_DEF.map(b => {
+        const earned = state.badges.includes(b.id);
+        return `
+            <div class="badge-card ${earned ? 'earned' : 'locked'}">
+                <div class="badge-icon">${b.icon}</div>
+                <div class="badge-name">${b.name}</div>
+                <div class="badge-desc">${b.desc}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════════
+
+function openModal(id) {
+    document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+// Fermer modal en cliquant en dehors
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('show');
+    });
+});
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+
+(function init() {
+    renderHeader();
+    renderMenu();
+})();
+
+</script>
+</body>
+</html>
